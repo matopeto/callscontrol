@@ -1,0 +1,232 @@
+Popis xml suboru:
+
+cely xml dokument musi byt uzavrety do root elementu <tariff>
+globalne elementy:
+
+tariff_name:
+	Popis: Meno tarifu
+	Typ: String (Retazec)
+	Default: "Tariff"
+	Priklad: Moj tarif sa vola Odepis.
+		<tariff_name>Odepis</tariff_name>
+
+monthly_pay:
+	Popis: Mesacny pausal (Kolko platim za mesiac)
+	Typ: Double (Desatinne cislo)
+	Default: 0
+	Priklad: Mesacne platim 10 korun.
+		<monthly_pay>10</monthly_pay>
+
+currency:
+	Popis: Mena v ktorej je vedeny pausal.
+	Typ: String
+	Default: "€" (Znak euro)
+	Priklad: Platim v ceskych korunach.
+		<currency>kc</currency>
+
+vat:
+	Popis: DPH.
+	Typ: Double
+	Default: 0
+	Priklad: Dph je 19%.
+		<vat>0.19</vat>
+
+tarification:
+	Popis: Tarifikacia, default pre vsetky pocitadla.
+	Typ: String
+	     V tvare A/B[/C], kde A, B su cele cisla
+	     A - minimalny pocet sekund
+	     B - uctovacia jednotka v sekundach
+	     C - maximalny pocet sekund
+	Default: "1/1"
+	Priklad: Tarifikacia je 60/1. (uctovacia jednotka 1s, minimalne vsak 60s)
+		<tarification>60/1</tarification>
+	Priklad: Tarifikacia je 60/1. (uctovacia jednotka 1s, minimalne vsak 60s)
+	         Po 10minute ale uz neplatime.
+		<tarification>60/1/600</tarification>
+		
+
+free_minutes:
+	Popis: Definuje volne minuty, moze byt pomenovane. Tychto tagov moze byt viac
+	Typ: Integer (Cele cislo)
+	Atributy:
+		name (String, nepovinny) - nazov volnych minut, umoznuje pouzit v pocitadlach.
+	Default: nieje zadane.
+	Priklad: Mam dva druhy volnych minut, 40 do domacej siete 10 do ostatnych sieti.
+		<free_minutes name="home">40</free_minutes>
+		<free_minutes name="others">10</free_minutes>
+	Priklad: Mam iba jeden druh volnych minut, nemusim pomenuvavat
+		<free_minutes>100</free_minutes>
+
+cost_period:
+	Popis: Definicia intervalov, cez ktore mozeme pocitat rozne ceny za hovory.
+	Typ: Xml
+	Atributy:
+		name (String, povinny)         - nazov intervalu.
+		from (String, nepovinny)       - Retazec v tvare hh:mm, kde hh su hodiny a mm su minuty, urcuje
+		                                 odkedy plati interval. Ak nieje zadane interval zacina o polnoci.
+		to (String, nepovinny)         - Retazec v tvare hh:mm, kde hh su hodiny a mm su minuty, urcuje
+		                                 dokedy plati interval. Ak nieje zadane interval konci o polnoci.
+		weekdays (String, nepovinny)   - Retazec v tvare day1;day2; (nazvy anglickych dni oddelene bodkociarkou,
+		                                 pre ktore plati interval
+	Vnutorne XML obsahuje tagy:
+		day:
+		    Popis: Den pre ktore plati interval, ak niesu zadane plati pre vsetky dni. Moze byt viacnasobny.
+			Atributy:
+				day (Integer)
+				month (Integer)
+				type (String) hodnota "neg" urcuje ze ak je dany den tak hovor nepadne do tohoto intervalu.
+
+	Priklad: Mimo spicku je cez vikend, od 18:00 do 8:00 a cez sviatky.
+	<cost_period name="mimospicku" from="18:00" to="8:00" weekdays="Saturday;Sunday">
+		<day day="1" month="1" />
+		<day day="1" month="5" />
+		<day day="8" month="5" />
+	</cost_period>
+
+	Priklad: Spicku je cez tyzden, od 8:00 do 18:00 a cez sviatky nieje.
+	<cost_period name="spicka" from="8:00" to="18:00" weekdays="Monday;Tuesday;Wednesday;Thursday;Friday">
+		<day day="1" month="1" type="neg" />
+		<day day="1" month="5" type="neg" />
+		<day day="8" month="5" type="neg" />
+	</cost_period>
+
+format:
+	Popis: Umoznuje nastavit format vypisu tarifu.
+	obsahuje tagy:
+		format_short:
+		format_long:
+			Popis: Definuje vystup aplikacie, je mozne konfigurovat co sa ma vypisat pri standartnom
+			vypise alebo pri detailnom. Je mozne pouzit pseudotagy, na ktorych misto sa vlozia prislusne hodnoty:
+				{tariff-name}          Meno tarifu
+				{monthly-pay}          Mesacna platba
+				{VAT}                  DPH
+				{currency}             Mena 
+				{tarification}         Tarifikacia 
+				{all-counter-short}    Vypis vsetkych pocitadiel v kratkom formate
+				{all-counter-long}     Vypis vsetkych pocitadiel v dlhom formate
+				{counter-"name"-short} Vypis konkretneho pocitadla, kratky format, kde "name" je nazov pocidadla
+				{counter-"name"-long}  Vypis konkretneho pocitadla, dlhy format, kde "name" je nazov pocidadla
+				{all-free-minutes}     Vypis vsetkych zostavajucich volnych minut v tvare: Nazov: hh:mm:ss
+				{free-minutes-"name"}  Vypis zozstavajucich volnych minut pre zadane volne minuty
+				{money}                Utratena ciastka penazi za dane obdobie
+				{money+VAT}            Utratena ciastka plus DPH
+				{pay-day}              Uctovaci den
+				{count-from}           Datum odkedy sa pocitalo
+				{count-to}             Datum dokedy sa pocitalo
+				{nl} alebo {new-line}  Novy riadok
+				
+				Medzery na zaciatku riadkov a konce riadkov sa ignoruju, nove riadky mozu byt zadane pomocou
+				tagov {nl}, {new-line}
+
+			Typ: String
+			Default: (format_short)
+				{tariff-name}:
+				from: {count-from}, to: {count-to}
+				Bill: {money}{currency}
+				Free minutes:
+				{all-free-minutes}
+				Counters:{new-line}{all-counters-short}
+			
+			Default: (format_long)
+				{tariff-name}:
+				from: {count-from}, to: {count-to}
+				Monthly pay: {monthly-pay}{currency}
+				Bill: {money}{currency}
+				Free minutes:
+				{all-free-minutes}
+				Counters:{new-line}{all-counters-long}
+		
+		money_with_vat:
+			Popis: Urcuje ci sa maju ceny zobrazene cez tag {money}
+			       zobrazovat s DPH alebo bez nej
+			Default: 0 (nezobrazuju sa)
+
+		money_with_vat:
+			Popis: Urcuje ci sa maju ceny zobrazene cez tag {money}
+			       zobrazovat s DPH alebo bez nej
+			Default: 0 (nezobrazuju sa)
+		
+		hide_empty_counters:
+			Popis: Urcuje ci sa maju zobrazovat pocitadla s 0 minutami 
+			       aplikuje sa na tagy {all-counters-short} a {all-counters-long}
+			       zobrazovat s DPH alebo bez nej
+			Default: 1 (nezobrazuju sa)
+			
+	Priklad: Pre kratky vypis mi staci prehlad o volnych minutach.
+	         Vypisujem aj prazdne pocitadla.
+	<format>
+		<hide_empty_counters>0</hide_empty_counters>
+		<short>Volnych minut ostava:{nl}{all-free-minutes}</short>
+	</format>
+	
+moved_numbers:
+	Popis: umožnuje jednoduchšie definovať prenesené čísla.
+	Typ XML
+		Vnutorne XML obsahuje tagy:
+		regex:
+		number:
+			Popis: Definuje regularny vyraz popripade cislo, pre ktore chceme preniest do
+			daneho pocidadla.
+
+			Atributy:
+				value (String, povinny) - regulárny výraz alebo číslo				
+				counter (String, povinny) - meno počítadla, kam sa má číslo preniesť
+
+	
+	
+counter:
+	Popis: Vytvara pocidalo hovorov, da sa nastavit pre ktore cisla
+	Typ: XML
+	Atributy:
+		name (String) - meno pocitadla
+		tarification (String, nepovinny) - tarifikacia pre dane pocitadlo,
+		                                   ak nieje zadana pouzije globalna hodnota
+		from_minutes (String, nepovinny) - nazov minut z ktorych cerpa, ak nieje zadane
+		                                   z volnych minut sa necerpa a vseko sa plati.
+
+	Vnutorne XML obsahuje tagy:
+		regex:
+		number:
+			Popis: Definuje regularny vyraz popripade cislo, pre ktore bude (ne)platit dane pocidadlo
+			Moze ich byt lubovolne vela. Cislo do pocitadla patri ak sa zhoduje s aspon jednou
+			definiciou a padne aspon do jedneho cost_intervalu.
+
+			Atributy:
+				value (String, povinny) - regulárny výraz alebo číslo				
+				type (String, nepovinny) - ak ma hodnotu "neg" tak dane cislo/reg. vyraz do pocitadla nepatri
+				
+		cost:
+			Popis: Urcuje cenu za minutu hovoru (po prevolani volnych minut)
+			Typ: Double
+			Atributy:
+				period (String, nepovinny) - definuje cenu za dany interval definovany cez cost_interval
+				tarification (String, nepovinny) - definuje tarifikaciu pre dany interval definovany cez cost_period
+				fromMinutes (String, nepovinny) - definuje nazov volnych minut, z ktorych bude odoberat v danom intervale
+
+		format_short:
+		format_long:
+			Popis: Definicia vystupu pocitadla. Nasledujuce specialne tagy sa prepisu na danu hodnotu.
+				{timer}           Pocet minut prevolanych cez dane pocitadlo
+				{timer-real}      Pocet minut realne prevolanych cez pocitadlo
+				{currency}        Mena 
+				{money}           Utratena ciastka
+				{money+VAT}       Utratena ciastka plus DPH
+				{counter-name}    Meno pocitadla
+				{calls-count}     Pocet uskutocnenych hovorov
+				{nl} alebo {new-line}  Novy riadok
+			Defalut (format_short):
+				{counter-name}: {timer}
+			Defalut (format_long): 
+				{counter-name}: {timer} Real: {timer-real}, {calls-count} calls
+			
+
+	Priklad: Domaca siet (Vodafone) s dvoma prenesenymi cislami, jedno od a jedno k vodafonu.
+		Cena za hovor je 7.14 mimo spicku 11.50 v spicke.
+		<counter name="Vodafone" tarification="60/1" from_minutes="home">
+			<cost period="spicka">11.50</cost>
+			<cost>7.14</cost>
+			<regex value="((608)|(773)|(774)|(775)|(776)|(777))[0-9]{6}$" />
+			<number value="772111111"/>
+			<number type="neg" value="608111111"/>
+		</counter>

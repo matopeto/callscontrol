@@ -1,0 +1,4 @@
+﻿export vypisu
+viac tarifov v jednom xml subore
+jazyky
+prenositelne minuty

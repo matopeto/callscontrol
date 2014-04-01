@@ -1,0 +1,36 @@
+﻿0.1.5 (20. 8. 2010)
+Pridana funkcionalita: Pridana moznost vybrat si akykolvek interval.
+
+0.1.4 (22. 9. 2009)
+Oprava:                Ak bolo definované číslo za pomoci <number> a obsahovalo
+                       znak + nebolo správne detekované. Týkalo sa to prenesených
+                       napr. prenesených čísel generovaných "generátorom tarifov"
+Pridana funkcionalita: Jednoduchsie prenasanie cisel. Cisla definute napr. takto.
+                       <moved_numbers>
+                          <number value="+420777000000" counter="Ostatni" />
+                       </moved_numbers>
+                       v tagu moved_numbers ich mozme definovať viac, a da sa použiť
+                       i tag <regex />
+Pridana funkcionalita: V pocitadle mozeme do cost zadat tarifikaciu aj volne
+                       minuty z ktorych budeme brat. Umoznuje to mat napriklad
+                       vikendove minuty, bez opakovaneho definovania pocitadla.
+Pridana funkcionalita: Moznost nastavit tarifikaciu sposobom po x-tej minute neplatite
+                       nastavenie tarifikacie v tvare a/b alebo a/b/c kde c je max.
+                       pocet sekund ktore sa budu uctovat.
+Uprava:                <format_short> a <format_long> pre tarif su nahradene tagmi
+                       <short> a <long> v tagu <format>
+
+0.1.3 (11. 9. 2009)
+Zmena chovania: default sa vypisuju ceny z tagu {money} s dph (ma to rovnaky vyznam ako {money+VAT})
+                pre vypnutie <format><money_with_vat>0</money_with_vat></format>
+Zmena chovania: default sa nevypisuju prazdne pocitadla (s 0 prevolanymi minutami)
+                v tachog {all-counters-short} a {all-counters-long}
+                pre vypnutie <format><hide_empty_counters>0</hide_empty_counters></format>
+Pridana polozka do menu: "Tafiff info", ukaze informacie o nacitanom tarife
+                         (to iste info ako pri zapnuti programu)
+
+0.1.2 (10. 9. 2009)
+Oprava: Nacitania tarifikacie. (globalna tarifikacia sa nenacitavala)
+Uprava chovania: Pri prepinani detailed sa uz neprepocitava znova ale zobrazi sa vysledok v danom formate.
+Uprava zobrazenia: Zjednodusenie vystupu programu.
+Zmena default tarifikacie z 60/1 na 1/1, pokial nieje ziadna zadana.
